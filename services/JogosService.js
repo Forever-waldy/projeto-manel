@@ -1,4 +1,5 @@
-
+const {Amigo} = require('../models');
+const {Jogo} = require('../models');
 class JogosService {
     constructor(model) {
         this.Jogo = model;
@@ -25,8 +26,7 @@ class JogosService {
     }
 
     getJogoById = async (data) => {
-        const {id} = data;
-        const jogo = await this.Jogo.findByPk(id);
+        const jogo = await this.Jogo.findByPk(data);
 
         return jogo;
     }
@@ -38,8 +38,29 @@ class JogosService {
 
     deleteJogo = async (data) => {
         const {id} = data;
-        await Jogo.destroy({ where: id });
+        await Jogo.destroy({where: {id: data.id}});
     }
+
+    getJogosJson = async () => {
+        const jogos = await this.Jogo.findAll({
+            include: [{ model: Amigo, as: 'dono' }],
+            order: [['titulo', 'ASC']]
+        });
+
+        const resultado = {};
+
+        jogos.forEach(jogo => {
+            resultado[jogo.id] = {
+                titulo: jogo.titulo,
+                plataforma: jogo.plataforma,
+                amigoId: jogo.amigoId 
+            };
+        });
+
+        return resultado;
+    };
+
+
 }
 
 module.exports = JogosService;
