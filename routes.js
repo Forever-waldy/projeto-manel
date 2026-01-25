@@ -9,9 +9,14 @@ const amigoController = new AmigoController();
 const jogosController = new JogosController();
 const emprestimoController = new EmprestimoController();
 
+router.get('/amigos/json', amigoController.exibirJson);
+router.get('/jogos/json', jogosController.exibirJson);
+router.get('/emprestimos/json', emprestimoController.exibirJson);
+
 router.get('/amigos', amigoController.exibirAmigos);
 router.get('/amigos/novo', amigoController.exibirAdicionarAmigos);
 router.get('/amigos/editar/:id', amigoController.exibirEditarAmigo);
+
 router.post('/amigos/novo', amigoController.adicionarAmigos);
 router.post('/amigos/editar/:id', amigoController.editarAmigo);
 router.post('/amigos/excluir/:id', amigoController.excluirAmigos);
@@ -27,3 +32,5 @@ router.get('/emprestimos', emprestimoController.exibirEmprestimos);
 router.get('/emprestimos/novo', emprestimoController.exibirCriarEmprestimo);
 router.post('/emprestimos/novo', emprestimoController.criarEmprestimo);
 router.post('/emprestimos/excluir/:id', emprestimoController.excluirEmprestimo);
+
+module.exports = router;
