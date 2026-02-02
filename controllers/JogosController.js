@@ -2,6 +2,7 @@ const JogosService = require('../services/JogosService.js');
 const AmigoService = require('../services/AmigoService.js');
 const {Amigo} = require('../models');
 const {Jogo} = require('../models');
+const PDFDocument = require('pdfkit');
 
 class JogosController {
     constructor () {
@@ -59,6 +60,49 @@ class JogosController {
         const data = await this.jogoService.getJogosJson();
 
         res.status(200).json(data);
+    }
+
+    // /jogos/pdf
+    gerarPdf = async (req, res) => {
+        const jogos = await this.jogoService.getAllJogos();
+
+        const doc = new PDFDocument({ margin: 50 });
+
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader(
+            'Content-Disposition',
+            'inline; filename=relatorio-jogos.pdf'
+        );
+
+        doc.pipe(res);
+
+        // Título
+        doc
+            .fontSize(18)
+            .text('Relatório de Jogos', { align: 'center' });
+
+        doc.moveDown();
+
+        // Cabeçalho
+        doc.fontSize(12);
+        doc.text('ID', 50, doc.y, { continued: true });
+        doc.text('AmigoID', 100, doc.y, { continued: true });
+        doc.text('Título', 150, doc.y, { continued: true });
+        doc.text('Plataforma', 300, doc.y);
+
+        doc.moveDown(0.5);
+        doc.moveTo(50, doc.y).lineTo(550, doc.y).stroke();
+
+        // Dados
+        jogos.forEach(a => {
+            doc.moveDown(0.5);
+            doc.text(String(a.id), 50, doc.y, { continued: true });
+            doc.text(String(a.amigoId), 115, doc.y, { continued: true });
+            doc.text(a.titulo, 170, doc.y, { continued: true });
+            doc.text(a.plataforma, 325, doc.y);
+        });
+
+        doc.end();
     }
 }
 
